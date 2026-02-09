@@ -1,0 +1,18 @@
+{
+  "name": "@kannikact/githubpackages",
+  "version": "1.0.0",
+  "description": "Sample package published to GitHub Packages via release workflow",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kannikact/githubpackages.git"
+  },
+  "author": "kannikact",
+  "license": "MIT",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  }
+}
