@@ -1,30 +1,41 @@
-name: Node.js Package
+name: Publish Node Package to GitHub Packages
 
 on:
   release:
     types: [created]
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 12
-      - run: npm ci
-      - run: npm test
+permissions:
+  contents: read
+  packages: write
 
-  publish-gpr:
-    needs: build
+jobs:
+  build-and-publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: 12
-          registry-url: https://npm.pkg.github.com/
-      - run: npm ci
-      - run: npm publish
+          node-version: '20'                 # Node 12 is EOL; use LTS
+          registry-url: 'https://npm.pkg.github.com/'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            echo "Lockfile found → using npm ci"
+            npm ci
+          else
+            echo "No lockfile → using npm install"
+            npm install
+          fi
+
+      - name: Run tests
+        run: npm test
+
+      - name: Publish to GitHub Packages
+        run: npm publish
         env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
